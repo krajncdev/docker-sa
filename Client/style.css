@@ -1,0 +1,24 @@
+.webcam-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.webcam {
+  width: 100%;
+  height: 100%;
+}
+
+.time-container {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: beige;
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+}
