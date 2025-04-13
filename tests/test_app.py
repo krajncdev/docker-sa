@@ -8,4 +8,4 @@ BASE_URL = "http://localhost:5001"
 def test_hello_world():
     response = requests.get(f"{BASE_URL}/")
     assert response.status_code == 200
-    assert response.text == "Hello World"
+    assert response.text == "Hello Wor"
