@@ -35,7 +35,7 @@ jobs:
     needs: check-tests # Tako povemo, da je ta posel odvisen od prejšnjega
     strategy:
       matrix:
-        python-version: ['3.12.3'] # Matrika za različne verzije Pythona
+        python-version: ['3.10.14', '3.11.10', '3.12.7'] # Matrika za različne verzije Pythona
     steps:
       # Kloniranje repozitorija
       - name: Checkout koda
@@ -62,6 +62,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
       # Namestitev dependencyjev
       - name: Namesti odvisnosti
