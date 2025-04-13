@@ -1,0 +1,38 @@
+name: Razmestitev na DockerHub
+
+# Proženje po uspešnem zaključku testiranja
+on:
+  workflow_run:
+    workflows: ['Testiranje projekta']
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    environment: production # Okolje za produkcijo
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Zažene se le ob uspehu testov
+    steps:
+      # Kloniranje repozitorija
+      - name: Checkout koda
+        uses: actions/checkout@v4
+
+      # Prijava v DockerHub
+      - name: Prijava v DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      # Gradnja Docker slike za strežnik
+      - name: Zgradi strežniško sliko
+        run: docker build Server/ -t ${{ secrets.DOCKERHUB_USERNAME }}/server_sa_webcam:latest
+
+      # Gradnja Docker slike za odjemalca
+      - name: Zgradi odjemalsko sliko
+        run: docker build Client/ -t ${{ secrets.DOCKERHUB_USERNAME }}/client_sa_webcam:latest
+
+      # Potiskanje strežniške slike
+      - name: Potisni strežniško sliko
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/server_sa_webcam:latest
+
+      # Potiskanje odjemalske slike
+      - name: Potisni odjemalsko sliko
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/client_sa_webcam:latest
