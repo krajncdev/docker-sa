@@ -57,9 +57,14 @@ jobs:
             echo "Brez napak, nadaljujem..."
           fi
 
+      # Ustvari virtualno okolje
+      - name: Ustvari virtualno okolje
+        run: python${{ matrix.python-version }} -m venv venv
+
       # Namestitev dependencyjev
       - name: Namesti odvisnosti
         run: |
+          source venv/bin/activate
           python${{ matrix.python-version }} -m pip install --upgrade pip
           python${{ matrix.python-version }} -m pip install pytest requests flask flask-cors opencv-python
           if [ -f requirements.txt ]; then python${{ matrix.python-version }} -m pip install -r requirements.txt; fi
@@ -71,9 +76,12 @@ jobs:
       # Zagon strežnika v ozadju
       - name: Zaženi strežnik
         run: |
+          source venv/bin/activate
           python${{ matrix.python-version }} app.py &
           sleep 5  # Počakaj, da se strežnik zažene
 
       # Zagon testov
       - name: Zaženi teste
-        run: python${{ matrix.python-version }} -m pytest tests/test_app.py
+        run: |
+          source venv/bin/activate
+          python${{ matrix.python-version }} -m pytest tests/test_app.py
