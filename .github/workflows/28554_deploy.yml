@@ -12,29 +12,27 @@ jobs:
     runs-on: self-hosted
     environment: production # Okolje za produkcijo
     if: ${{ github.event.workflow_run.conclusion == 'success' }} # Zažene se le ob uspehu testov
+    strategy:
+      matrix:
+        component: [server, client] # Matrika za server in client
     steps:
       # Kloniranje repozitorija
       - name: Checkout koda
         uses: actions/checkout@v4
 
+      # Prijava v DockerHub
       - name: Prijava v DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Gradnja Docker slike za strežnik
-      - name: Zgradi strežniško sliko
-        run: docker build Server/ -t ${{ secrets.DOCKERHUB_USERNAME }}/server_sa_webcam:latest
+      # Gradnja Docker slike
+      - name: Zgradi Docker sliko za ${{ matrix.component }}
+        run: |
+          docker build ${{ matrix.component == 'server' && 'Server' || 'Client' }}/ \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.component }}_sa_webcam:latest
 
-      # Gradnja Docker slike za odjemalca
-      - name: Zgradi odjemalsko sliko
-        run: docker build Client/ -t ${{ secrets.DOCKERHUB_USERNAME }}/client_sa_webcam:latest
-
-      # Potiskanje strežniške slike
-      - name: Potisni strežniško sliko
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/server_sa_webcam:latest
-
-      # Potiskanje odjemalske slike
-      - name: Potisni odjemalsko sliko
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/client_sa_webcam:latest
+      # Potiskanje Docker slike
+      - name: Potisni Docker sliko za ${{ matrix.component }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.component }}_sa_webcam:latest
