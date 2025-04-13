@@ -1,4 +1,4 @@
-name: Razmestitev na DockerHub
+name: Deployanje na DockerHub
 
 # Proženje po uspešnem zaključku testiranja
 on:
@@ -17,9 +17,11 @@ jobs:
       - name: Checkout koda
         uses: actions/checkout@v4
 
-      # Prijava v DockerHub
       - name: Prijava v DockerHub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Gradnja Docker slike za strežnik
       - name: Zgradi strežniško sliko
